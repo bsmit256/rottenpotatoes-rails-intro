@@ -13,6 +13,10 @@ class MoviesController < ApplicationController
   def index
      @all_ratings = Movie.all_ratings
      @movies = Movie.all
+     if params[:ratings]==nil
+       @selected=Movie.all_ratings
+       session.delete(:ratings)
+     end
         if params[:ratings]!=nil
          @movies = @movies.select{|movie| params[:ratings].has_key?(movie.rating)}
          session[:ratings]=params[:ratings]
