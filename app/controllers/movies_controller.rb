@@ -11,22 +11,25 @@ class MoviesController < ApplicationController
   end
 
   def index
+    @redirect=false
      @all_ratings = Movie.all_ratings
      @movies = Movie.all
-     if params[:ratings]==nil
-       @selected=Movie.all_ratings
-       session.delete(:ratings)
-       params[:rating]=['G'=>1,'PG'=>1,'PG-13'=>1, 'R'=>1, 'NC-17'=>1]
-     end
-        if params[:ratings]!=nil
-         @movies = @movies.select{|movie| params[:ratings].has_key?(movie.rating)}
-         session[:ratings]=params[:ratings]
-         @selected=params[:ratings].keys
-       end
-         if session[:ratings]!=nil
-         @movies=@movies.select{|movie| session[:ratings].has_key?(movie.rating)}
-          @selected=session[:ratings].keys
-          end
+     
+     
+      if params[:ratings] != nil
+      @movies = @movies.select{ |movie| params[:ratings].has_key?(movie.rating) }
+      if params[:commit] == 'Refresh'
+        session[:ratings] = params[:ratings]
+      end
+      @selected = params[:ratings].keys
+      @ratings = params[:ratings]
+    else
+      @movies = @movies.select{ |movie| session[:ratings].has_key?(movie.rating) }
+      @selected = session[:ratings].keys
+      @ratings = session[:ratings]
+      @redirect = true
+    end
+
    
    if(params[:sort_param]== 'title')
       @movies=@movies.sort_by{|movie|movie.title}
